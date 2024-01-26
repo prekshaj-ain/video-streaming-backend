@@ -333,6 +333,12 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   }
 
   //TODO: delete old image - assignment
+  let { coverImage: oldImage } = await User.findById(req.user._id).select(
+    "coverImage"
+  );
+  let publicId = oldImage.split("/").pop().split(".")[0];
+  //   console.log(publicId);
+  await deleteFromCloudinary(publicId);
 
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
