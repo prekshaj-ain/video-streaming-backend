@@ -9,6 +9,16 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const deleteVideoFromCloudinary = async (publicId) => {
+  try {
+    if (!publicId) return null;
+    await cloudinary.uploader.destroy(publicId, {
+      resource_type: "video",
+    });
+  } catch (error) {
+    return null;
+  }
+};
 const deleteFromCloudinary = async (publicId) => {
   try {
     if (!publicId) return null;
@@ -36,4 +46,4 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { deleteFromCloudinary, uploadOnCloudinary };
+export { deleteFromCloudinary, deleteVideoFromCloudinary, uploadOnCloudinary };
