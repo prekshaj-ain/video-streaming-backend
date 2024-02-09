@@ -8,6 +8,30 @@ const getVideoComments = asyncHandler(async (req, res) => {
   //TODO: get all comments for a video
   const { videoId } = req.params;
   const { page = 1, limit = 10 } = req.query;
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "video id is invalid");
+  }
+  page = parseInt(page);
+  limit = parseInt(limit);
+  if (isNaN(page) || page < 1) {
+    throw new ApiError(400, "Invalid page number");
+  }
+  if (isNaN(limit) || limit < 20) {
+    throw new ApiError(400, "Invalid limit number");
+  }
+  const commentAggregate = await Comment.aggregate([
+    {
+      $match: { owner: videoId },
+    },
+  ]);
+
+  const comments = await Comment.aggregatePaginate(commentAggregate, {
+    page,
+    limit,
+  });
+  res
+    .status(200)
+    .json(new ApiResponse(200, comments, "comments fetched successfully"));
 });
 
 const addComment = asyncHandler(async (req, res) => {
